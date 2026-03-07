@@ -34,31 +34,54 @@ export const BrutalWindow: React.FC<BrutalWindowProps> = ({
       }
     };
 
-    const handleMouseUp = () => {
+    const handleTouchMove = (e: TouchEvent) => {
+        if (isDragging) {
+            setPosition({
+                x: e.touches[0].clientX - dragOffset.x,
+                y: e.touches[0].clientY - dragOffset.y
+            });
+        }
+    }
+
+    const handleStop = () => {
       setIsDragging(false);
     };
 
     if (isDragging) {
       document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
+      document.addEventListener('mouseup', handleStop);
+      document.addEventListener('touchmove', handleTouchMove);
+      document.addEventListener('touchend', handleStop);
     }
 
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('mouseup', handleStop);
+      document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('touchend', handleStop);
     };
   }, [isDragging, dragOffset]);
 
-  const handleMouseDown = (e: React.MouseEvent) => {
+  const handleStart = (clientX: number, clientY: number) => {
     onFocus();
-    // Only drag if clicking the header
+    setIsDragging(true);
+    setDragOffset({
+        x: clientX - position.x,
+        y: clientY - position.y
+    });
+  };
+
+  const handleMouseDown = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
     if (target.closest('.window-header') && !target.closest('.window-controls')) {
-        setIsDragging(true);
-        setDragOffset({
-          x: e.clientX - position.x,
-          y: e.clientY - position.y
-        });
+        handleStart(e.clientX, e.clientY);
+    }
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const target = e.target as HTMLElement;
+    if (target.closest('.window-header') && !target.closest('.window-controls')) {
+        handleStart(e.touches[0].clientX, e.touches[0].clientY);
     }
   };
 
@@ -72,8 +95,13 @@ export const BrutalWindow: React.FC<BrutalWindowProps> = ({
         zIndex: isActive ? 100 : 50
       }}
       onMouseDown={onFocus}
+      onTouchStart={onFocus}
     >
-      <div className="window-header" onMouseDown={handleMouseDown}>
+      <div 
+        className="window-header" 
+        onMouseDown={handleMouseDown}
+        onTouchStart={handleTouchStart}
+      >
         <div className="window-title">
           <Square size={14} fill="currentColor" />
           <span>{title}</span>

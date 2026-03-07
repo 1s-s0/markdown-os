@@ -121,7 +121,16 @@ export const Terminal: React.FC<TerminalProps> = ({ files, setFiles, openFile, t
         output = `<span class="t-red">Command not found: ${command}</span>`;
     }
 
-    const promptLine = `&gt; <span class="t-white">${cmd}</span>`;
+    const escapeHtml = (unsafe: string) => {
+        return unsafe
+             .replace(/&/g, "&amp;")
+             .replace(/</g, "&lt;")
+             .replace(/>/g, "&gt;")
+             .replace(/"/g, "&quot;")
+             .replace(/'/g, "&#039;");
+    }
+
+    const promptLine = `&gt; <span class="t-white">${escapeHtml(cmd)}</span>`;
     if (cmd.trim()) {
         setHistory(prev => [...prev, promptLine, output].filter(Boolean));
     } else {

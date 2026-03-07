@@ -1,80 +1,111 @@
-# BRUTALIST_MD // DOCUMENTATION_V0.7beta
+# BRUTALIST_MD // DOCUMENTATION_V1.0
 
-## 01_INTRODUCTION
-**BRUTALIST_MD** is a high-performance, aesthetically bold Markdown editor built with React, TypeScript, and Vite. It rejects the soft gradients and rounded corners of modern UI, embracing a **Raw, Functional, and Brutalist** design philosophy.
+```text
+██████╗ ██████╗ ██╗   ██╗████████╗ █████╗ ██╗     ██╗███████╗████████╗    ███╗   ███╗██████╗ 
+██╔══██╗██╔══██╗██║   ██║╚══██╔══╝██╔══██╗██║     ██║██╔════╝╚══██╔══╝    ████╗ ████║██╔══██╗
+██████╔╝██████╔╝██║   ██║   ██║   ███████║██║     ██║███████╗   ██║       ██╔████╔██║██║  ██║
+██╔══██╗██╔══██╗██║   ██║   ██║   ██╔══██║██║     ██║╚════██║   ██║       ██║╚██╔╝██║██║  ██║
+██████╔╝██║  ██║╚██████╔╝   ██║   ██║  ██║███████╗██║███████║   ██║       ██║ ╚═╝ ██║██████╔╝
+╚═════╝ ╚═╝  ╚═╝ ╚═════╝    ╚═╝   ╚═╝  ╚═╝╚══════╝╚═╝╚══════╝   ╚═╝       ╚═╝     ╚═╝╚═════╝ 
+```
 
-It provides a "Digital Lab" environment for writers and developers who value speed, high contrast, and manual control over their workspace.
+## // 00_MANIFESTO
+**WE REJECT THE SOFT.**
+We reject the rounded corner. We reject the drop shadow. We reject the gradient.
 
----
-
-## 02_TECH_STACK
-- **Framework:** React 18+ (TypeScript)
-- **Build Tool:** Vite (Ultra-fast HMR)
-- **Parser:** [Marked](https://marked.js.org/) (High-speed synchronous parsing)
-- **Sanitizer:** [DOMPurify](https://github.com/cure53/dompurify) (XSS protection)
-- **Icons:** [Lucide-React](https://lucide.dev/) (Sharp, consistent stroke icons)
-- **Styling:** Vanilla CSS (CSS Variables for real-time theme injection)
-
----
-
-## 03_ARCHITECTURE_EXPLANATION
-
-### THE DATA FLOW (SINGLE SOURCE OF TRUTH)
-The application follows a strict unidirectional data flow:
-1.  **INPUT LAYER:** A controlled `<textarea>` captures raw text. Every keystroke updates the `text` state.
-2.  **TRANSFORM LAYER:** A `useMemo` hook monitors the `text` state. When it changes, it triggers `marked.parse()`, followed by `DOMPurify.sanitize()`. This ensures the preview is always valid and safe HTML.
-3.  **OUTPUT LAYER:** The resulting HTML string is injected into a preview container via `dangerouslySetInnerHTML`.
-
-### THE WINDOWING SYSTEM (`BrutalWindow.tsx`)
-Unlike standard modal dialogs, BRUTALIST_MD uses a custom-built windowing engine:
-- **Absolute Positioning:** Windows exist in a separate coordinate space.
-- **Z-Index Management:** Clicking a window brings it to the front (`activeWindow` state).
-- **Custom Drag Logic:** Implemented using `mousemove` and `mouseup` event listeners on the document level to prevent "drag-lag" and ensure smooth movement even when the mouse leaves the window header.
+**BRUTALIST_MD** is a high-performance, aesthetically bold Markdown editor built with React, TypeScript, and Vite. It embraces a **Raw, Functional, and Brutalist** design philosophy. It provides a "Digital Lab" environment for writers and developers who value speed, high contrast, and manual control over their workspace.
 
 ---
 
-## 04_CORE_FEATURES
+## // 01_SYSTEM_ARCHITECTURE
 
-### 1. TRIPLE_VIEW_MODES
-- **WRITE:** Maximize focus. Only the editor is visible.
-- **SPLIT:** The standard "Lab" mode. 50/50 split between code and result.
-- **PREVIEW:** Final validation mode. Hides all UI clutter.
-
-### 2. SYSTEM_CONFIG (CUSTOMIZATION)
-- **ACCENT_INJECTION:** Users can change the system's primary accent color (Neon Pink, Green, Cyan). This is handled by updating `--accent` CSS variable at the `:root` level.
-- **DYNAMIC_TYPOGRAPHY:** Real-time font size scaling and font family switching (Space Mono, Fira Code, etc.).
-- **PERSISTENCE:** All content and settings are synced to `localStorage`. Your work survives a browser crash or refresh.
-
-### 3. EXPORT_ENGINE
-- **RAW_EXPORT:** Downloads the current buffer as a `.md` file.
-- **HTML_EXPORT:** Generates a standalone `.html` file containing the rendered output.
+### [CORE_STACK]
+> **REACT 18 + TYPESCRIPT** :: The engine. Strictly typed. Component-based architecture.
+> **VITE** :: The ignition. Instant HMR (Hot Module Replacement). Zero-lag dev environment.
+> **MARKED** :: The translator. High-speed synchronous Markdown parsing.
+> **DOMPURIFY** :: The shield. Sanitizes HTML output against XSS vectors.
+> **LUCIDE-REACT** :: The iconography. Sharp. Stroke-based. No fill.
+> **VANILLA CSS** :: The skin. Raw CSS variables for real-time theme injection.
 
 ---
 
-## 05_DESIGN_PHILOSOPHY: BRUTALISM
-The UI is built on these four pillars:
-1.  **HIGH_CONTRAST:** Deep blacks and pure whites for maximum readability.
-2.  **BOLD_BORDERS:** 2px solid borders on every interactive element.
-3.  **ZERO_RADIUS:** No rounded corners. Everything is sharp.
-4.  **MONOSPACE_FIRST:** Monospace fonts are used for all UI elements to emphasize the "machine-like" nature of the tool.
+## // 02_ENGINEERING_LOGIC
+
+### [DATA_FLOW_PIPELINE]
+The application follows a strict unidirectional data flow to ensure stability:
+1.  **INPUT_BUFFER** :: A controlled `<textarea>` captures raw keystrokes. Every event updates the global `text` state.
+2.  **TRANSFORM_NODE** :: A `useMemo` hook monitors the `text` state. When it changes, it triggers `marked.parse()`.
+3.  **SANITIZATION_GATE** :: `DOMPurify` strips malicious code from the parsed HTML.
+4.  **RENDER_TARGET** :: The resulting safe HTML string is injected into the preview container via `dangerouslySetInnerHTML`.
+
+### [WINDOW_MANAGER] (`BrutalWindow.tsx`)
+Unlike standard modal dialogs, BRUTALIST_MD uses a custom-built windowing engine to simulate a desktop OS environment within the browser:
+- **ABSOLUTE_COORDINATES** :: Windows float freely in a separate coordinate space.
+- **Z-INDEX_STACKING** :: Clicking a window brings it to the foreground (`activeWindow` state).
+- **GLOBAL_EVENT_LISTENERS** :: Drag logic uses `mousemove` and `mouseup` on the `document` level to prevent "drag-lag" and ensure smooth movement even when the cursor exits the window bounds.
 
 ---
 
-## 06_INSTALLATION_&_RUNNING
+## // 03_OPERATIONAL_MODES
 
-### PREREQUISITES
+### [VIEW_STATES]
+| MODE | DESCRIPTION |
+| :--- | :--- |
+| **WRITE** | Editor only. Distraction-free. Pure input. |
+| **SPLIT** | The Lab. 50% Input / 50% Output. |
+| **PREVIEW** | Render only. Read mode. Hides UI clutter. |
+
+### [SYSTEM_CONFIG]
+- **ACCENT_INJECTION** :: Users can change the system's primary accent color (Neon Pink, Green, Cyan). This updates the `--accent` CSS variable at the `:root` level.
+- **DYNAMIC_TYPOGRAPHY** :: Real-time font size scaling and font family switching (Space Mono, Fira Code, etc.).
+- **PERSISTENCE_LAYER** :: All content and settings are synced to `localStorage`.
+  - Browser crash? **Data survives.**
+  - Tab closed? **Data survives.**
+
+### [EXPORT_ENGINE]
+- **RAW_EXPORT** :: Downloads the current buffer as a `.md` file.
+- **HTML_EXPORT** :: Generates a standalone `.html` file containing the rendered output.
+
+---
+
+## // 04_VISUAL_LANGUAGE
+
+### [THE_FOUR_PILLARS]
+1.  **HIGH_CONTRAST** :: Deep blacks (#000000) and pure whites (#FFFFFF). No greys.
+2.  **BOLD_BORDERS** :: 2px solid borders on every interactive element. No ambiguity.
+3.  **ZERO_RADIUS** :: Curves are weakness. Edges are strength. Everything is sharp.
+4.  **MONOSPACE_FIRST** :: Code is text. Text is code. Monospace fonts are used for all UI elements to emphasize the "machine-like" nature of the tool.
+
+---
+
+## // 05_DIRECTORY_MAP
+
+```text
+/src
+├── /components  :: [UI_LOGIC] Windows, Panels, Controls
+├── App.tsx      :: [CORE_LOGIC] State & Layout
+├── App.css      :: [STYLE_ENGINE] CSS Variables & Brutalist Rules
+├── main.tsx     :: [ENTRY_POINT] React DOM Root
+└── /assets      :: [STATIC_RESOURCES]
+```
+
+---
+
+## // 06_INSTALLATION_SEQUENCE
+
+### [PREREQUISITES]
 - Node.js (v18+)
 - npm or yarn
 
-### SETUP
+### [INIT_PROTOCOL]
 ```bash
-# Install dependencies
+# INJECT_DEPENDENCIES
 npm install
 
-# Run development server
+# INITIALIZE_DEV_SERVER
 npm run dev
 
-# Build for production
+# COMPILE_PRODUCTION_BUILD
 npm run build
 ```
 
